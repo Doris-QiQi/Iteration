@@ -1,0 +1,108 @@
+---
+title: "Iteration and Listing Columns"
+author: "Jingyi Yao"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+set.seed(1)
+```
+
+
+## Lists
+
+#### 1. vectors are limited to a single data class 
+
+```{r}
+vec_numeric = 5:8                           # all numeric
+vec_char = c("My", "name", "is", "Jeff")    # all character
+vec_logical = c(TRUE, TRUE, TRUE, FALSE)    # all logical
+
+```
+
+#### 2. lists can store vectors of different classes, including tables
+```{r}
+l = list(
+  vec_numeric = 5:8,
+  mat         = matrix(1:8, 2, 4),
+  vec_logical = c(TRUE, FALSE),
+  summary     = summary(rnorm(1000)))    # a table can be stored in a list
+l
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
