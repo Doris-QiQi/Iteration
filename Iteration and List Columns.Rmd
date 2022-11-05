@@ -127,24 +127,37 @@ output[[1]]        # get the item in output using index
 ```
 
 
-```{r}
+## Map
 
+##### for loop is somtimes too complex
+
+##### `map` function in `purrr` package can make it clearer
+
+#### 1. `map(list, function)` the first argument is the list/vector/df to iterate over
+```{r}
+output = map(list_norms, mean_and_sd)
+
+output
+
+```
+
+#### 2. use `.x`to specify the input list, and `~` to specify the function on that list
+```{r}
+output = map(.x = list_norms, ~ mean_and_sd(.x)) # use function as an argument in another fucntion
+output
 
 ```
 
 
 ```{r}
+output = map(list_norms, median)
+# output = map(.x = list_norms, ~ median(.x))
 
-
-```
-
-
-```{r}
-
+output
 
 ```
 
-
+## Map Variants
 ```{r}
 
 
