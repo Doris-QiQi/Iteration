@@ -35,7 +35,10 @@ z_scores = function(x) {      # function(argument)
 z_scores(x_vec)
 
 ```
-#### 3. `sample(vector,sample size,replace)` sample from the vector for sample size times
+#### 3. sample from the vector for sample size times
+
+`sample(vector,sample size,replace)` 
+
 ```{r}
 z_scores(sample(c(TRUE, FALSE), 25, replace = TRUE))
 
@@ -68,15 +71,53 @@ z_scores = function(x) {
 ```
 
 
+## Multiple Outputs
+
+#### 1. use list to show output
+
+`list(output name 1 = output1, output name 2 = output 2)`
 
 ```{r}
+mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop("Argument x should be numeric")
+  } else if (length(x) == 1) {
+    stop("Cannot be computed for length 1 vectors")
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
 
+  list(mean = mean_x,    # output the multiple outputs in a list
+       sd = sd_x)
+}
+
+mean_and_sd(x_vec)
 ```
 
 
+#### 2. use df (tibble) to show the output
+
+`tibble(output name 1 = output 1, output name 2 = output 2)`
 
 ```{r}
+mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop("Argument x should be numeric")
+  } else if (length(x) == 1) {
+    stop("Cannot be computed for length 1 vectors")
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
 
+  tibble(
+    mean = mean_x,      # the out put is a tibble (data frame)
+    sd = sd_x
+  )
+}
 ```
 
 
