@@ -1,5 +1,5 @@
 ---
-title: "Iteration and Listing Columns"
+title: "Iteration and List Columns"
 author: "Jingyi Yao"
 date: "`r Sys.Date()`"
 output: github_document
@@ -32,26 +32,30 @@ l = list(
   summary     = summary(rnorm(1000)))    # a table can be stored in a list
 l
 
-
 ```
 
+#### 3. Lists can be accessed using names or indices
 
+##### call by name
 ```{r}
-
+l$vec_numeric   # list$vector name
 
 ```
 
-
+##### call be index (use [[]])
 ```{r}
-
+l[[1]]         # list[[1]]  the first item in a list, use double [[]]
 
 ```
 
-
+##### call the index and then the range
 ```{r}
-
+l[[1]][1:3]      # the range follows the index in a double [[]]
 
 ```
+
+#### 4. dataframes are special lists -- each item has the same length
+
 
 
 ```{r}
