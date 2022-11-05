@@ -7,28 +7,63 @@ output: html_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-```
-
-
-```{r}
+library(rvest)
+set.seed(1)
 
 ```
 
+## Basic Function
 
-
+####  1. calculate z score
 ```{r}
+x_vec = rnorm(25, mean = 5, sd = 3)  # sampled from a normal distribution
 
-```
-
-
-
-```{r}
+(x_vec - mean(x_vec)) / sd(x_vec)    # calculate the z score for the sample 
 
 ```
 
 
+#### 2. writing a `z_score function(vector)` function to calculate z score
+```{r}
+z_scores = function(x) {      # function(argument) 
+  
+  z = (x - mean(x)) / sd(x)   # operation
+  z                           # output
+  
+}
+
+z_scores(x_vec)
+
+```
+#### 3. `sample(vector,sample size,replace)` sample from the vector for sample size times
+```{r}
+z_scores(sample(c(TRUE, FALSE), 25, replace = TRUE))
+
+```
+
+
+#### 4. identify the data type and data length before operation
+
+`is.numeric(vector)` judge if the vector is numeric, output is True or False
+
+`length(x)==1` if the argument is a single value 
+
+`stop("warning message")` when the data type is not satisfied, show the message
 
 ```{r}
+z_scores = function(x) {
+  
+  if (!is.numeric(x)) {  
+    stop("Argument x should be numeric")
+  } 
+  else if (length(x) == 1) {
+    stop("Z scores cannot be computed for length 1 vectors")
+  }
+  
+  z = x - mean(x) / sd(x)    # if -- else if -- else, else can be omitted
+  
+  z
+}
 
 ```
 
