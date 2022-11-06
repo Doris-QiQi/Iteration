@@ -134,6 +134,8 @@ output[[1]]        # get the item in output using index
 ##### `map` function in `purrr` package can make it clearer
 
 #### 1. `map(list, function)` the first argument is the list/vector/df to iterate over
+
+##### `mean_and _sd()` 's output is a dataframe
 ```{r}
 output = map(list_norms, mean_and_sd)
 
@@ -143,8 +145,10 @@ output
 
 #### 2. use `.x`to specify the input list, and `~` to specify the function on that list
 ```{r}
-output = map(.x = list_norms, ~ mean_and_sd(.x)) # use function as an argument in another fucntion
+output = map(.x = list_norms, ~ mean_and_sd(.x)) # use function as an argument in another function
 output
+
+
 
 ```
 
@@ -158,7 +162,55 @@ output
 ```
 
 ## Map Variants
+
+#### 1. `map_dbl(list,function,.id="input"` when the output is double
+
+##### the output of `median()` is double, so we can use `map_dbl`
+
+##### becasue the output of median is not integer or logical, we cannot use `map_int` or `map_lgl
+
+##### `id="input"` makes sure that we maintain the original list name in the output
+
+
 ```{r}
+output = map_dbl(list_norms, median, .id = "input")
+
+output
+
+```
+
+#### 2. `map_dfr()` is used when the output is data frame
+
+##### this output result is more tidy than used in a FOR Loop
+
+##### the FOR Loop will generate 4 separate df for the 4 items in a list
+
+##### `map_dfr` can generate a single df to store the 4 items' result in 4 rows
+
+```{r}
+output = map_dfr(list_norms, mean_and_sd, .id = "input")
+
+output
+
+```
+
+
+#### 3. `map_df()` is used in a pipeline
+
+#### 4. map2() and map2_dbl(), map2_int(), map2_dfr() are for function with 2 arguments
+```{r}
+output = map2(.x = input_1, .y = input_2, ~func(arg_1 = .x, arg_2 = .y))
+
+```
+
+
+
+
+## List Columns and Operations
+
+#### 1. How we generate a list
+```{r}
+
 
 
 ```
@@ -167,4 +219,40 @@ output
 ```{r}
 
 
+
 ```
+
+
+```{r}
+
+
+
+```
+
+
+
+```{r}
+
+
+
+```
+
+
+```{r}
+
+
+
+```
+
+
+
+```{r}
+
+
+
+```
+
+
+
+
+
