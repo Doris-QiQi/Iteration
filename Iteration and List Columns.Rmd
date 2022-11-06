@@ -209,45 +209,75 @@ output = map2(.x = input_1, .y = input_2, ~func(arg_1 = .x, arg_2 = .y))
 ## List Columns and Operations
 
 #### 1. How we generate a list
+
+##### list(item1 = vector1, item2 = vector2)
+
+##### items are the names and the vectors are the content
+
+##### the vectors can be from different classes
 ```{r}
-
-
+list_norms = 
+  list(
+    a = rnorm(20, 3, 1),
+    b = rnorm(20, 0, 5),
+    c = rnorm(20, 10, .2),
+    d = rnorm(20, -3, 1)
+  )
 
 ```
 
 
-```{r}
+#### 2. create a df with a column of list
 
+##### name is a character vector, samp is a list
+
+##### tibble() can use vector and list to create a df
+
+##### the column as a list is called the list column
+```{r}
+listcol_df = 
+  tibble(
+    name = c("a", "b", "c", "d"),
+    samp = list_norms
+  )
+
+listcol_df
+
+```
+
+#### 2. `pull(column name)` from the df
+```{r}
+listcol_df %>% pull(name)   # pulled out a vector
+
+listcol_df %>% pull(samp)   # pulled out a list
+
+```
+
+#### 3. the list column has all the properties as a list
+
+##### the items in a list column can be called by index
+```{r}
+listcol_df$samp[[1]]
 
 
 ```
 
-
+#### 4. map() can be applied to list columns as list
 ```{r}
-
-
+map(listcol_df$samp, mean_and_sd)
 
 ```
 
 
+#### 5. because the map() returns a list, it can be stored as a list column again.
 
+##### this is often achieved by mutate(new_list = map(list_col,function))
 ```{r}
+listcol_df = 
+  listcol_df %>% 
+  mutate(summary = map(samp, mean_and_sd))  # create a summary list to store the list
 
-
-
-```
-
-
-```{r}
-
-
-
-```
-
-
-
-```{r}
-
+listcol_df
 
 
 ```
