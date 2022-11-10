@@ -199,7 +199,7 @@ output
 
 #### 4. map2() and map2_dbl(), map2_int(), map2_dfr() are for function with 2 arguments
 ```{r}
-output = map2(.x = input_1, .y = input_2, ~func(arg_1 = .x, arg_2 = .y))
+# output = map2(.x = input_1, .y = input_2, ~func(arg_1 = .x, arg_2 = .y))
 
 ```
 
@@ -306,7 +306,12 @@ weather_df
 
 ```
 
-#### 1. `nest(df,column_name = col_i : col_j)` create a nested df
+#### 1. `nest(df,list_name = col_i : col_j)` create a nested df
+
+##### the list is created by combining the original columns
+##### the list is a new column in the nested dataframe.
+##### the list items(tibbles) are belong to the 3 names respectively
+
 ```{r}
 weather_nest = 
   nest(weather_df, data = date:tmin)
@@ -317,37 +322,53 @@ weather_nest
 
 
 ```{r}
+weather_nest %>% pull(name)
 
+```
+
+#### 2. `pull(new list)` get 3 tibbles corresponding to the 3 names
+```{r}
+weather_nest %>% pull(data)
+```
+
+#### 3. the reverse operation is to `unnest(nest_df, cols = list)`
+##### in this way we may restore the original data frame.
+```{r}
+unnest(weather_nest, cols = data)
+
+```
+
+#### 4. define a function using df as the argument
+```{r}
+weather_lm = function(df) {
+  lm(tmax ~ tmin, data = df)
+}
 
 ```
 
 
 ```{r}
-
+weather_lm(weather_nest$data[[1]])
 
 ```
 
-
+#### 5. `map(list,function)` list here is the listcol in a df
 ```{r}
+map(weather_nest$data, weather_lm)
 
-
+map(weather_nest$data, ~lm(tmax ~ tmin, data = .x))
 ```
 
 
+#### 6. `mutate(new_list = map(list,function))` create a new listcol taking value from map
 ```{r}
+weather_nest = 
+  weather_nest %>% 
+  mutate(models = map(data, weather_lm))
 
-
-```
-
-
-```{r}
-
+weather_nest$models
 
 ```
 
 
-```{r}
-
-
-```
 
