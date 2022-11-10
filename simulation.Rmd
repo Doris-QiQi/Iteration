@@ -1,0 +1,15 @@
+---
+title: "Simulation"
+author: "Jingyi Yao"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+set.seed(1)
+
+```
+
+
