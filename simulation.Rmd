@@ -59,12 +59,16 @@ for (i in 1:100) {
 
 sim_results = bind_rows(output)  # bind_rows(list) bind the list results by row
 
+sim_results
 ```
 
 
 
 #### 4. `map()` to simulate 100 samples
 ##### `expand_grid(x=,y=)` expand_grid creates a tibble
+##### `map(sample_size, sim_mean_sd)` is a example of using `map()`
+##### `map(argument,function)` is the correct usage the first item is the argument of the function
+##### 
 ```{r}
 sim_results_df = 
   expand_grid(
@@ -72,23 +76,203 @@ sim_results_df =
     iter = 1:100
   ) %>% 
   mutate(
-    estimate_df = map(sample_size, sim_mean_sd)
+    estimate_df = map(sample_size, sim_mean_sd) # sample_size is the argument of sim_mean_sd
   ) %>% 
-  unnest(estimate_df)
+  unnest(estimate_df)   # expand the list and get the results as 2 columns
 
 sim_results_df
 
+
 ```
+
 
 #### 5. examples of `expand_grid()`
 ##### can expand vector, df, matrix
 ##### can be used to quickly set up a tibble 
 ```{r}
 expand_grid(x = 1:3, y = 1:2)
+
 expand_grid(l1 = letters, l2 = LETTERS)  # letters and LETTERS are  character vector
+
 expand_grid(df = data.frame(x = 1:2, y = c(2, 1)), z = 1:3)
+
 expand_grid(x1 = matrix(1:4, nrow = 2), x2 = matrix(5:8, nrow = 2))
+
+expand_grid(
+    sample_size = c(30, 60, 120, 240),
+    iter = 1:1000
+  ) 
+
+
 ```
+
+
+#### 6. plot the simulation results
+##### plot only with x specified
+##### `geom_density()` generates the density plot (contour)
+```{r}
+sim_results_df %>% 
+  ggplot(aes(x = mu_hat)) +  
+  geom_density()
+
+```
+
+
+####
+
+```{r}
+sim_results_df %>% 
+  pivot_longer(                 # organize the mu_hat and sigma_hat from different samples
+    mu_hat:sigma_hat,
+    names_to = "parameter",     # use column name as category
+    values_to = "estimate") %>% 
+  group_by(parameter) %>%       # group by estimate category
+  summarize(
+    emp_mean = mean(estimate),  # calculate the mean of sample means
+    emp_sd = sd(estimate)) %>%  # calculate the sd of sample sd's
+  knitr::kable(digits = 3)      # make the output result in a well-formatted table
+
+
+```
+
+
+## Simulation: Mean for several n
+
+#### 1. simulate samples with size of 20,60,120,240, each simulate 1000 times
+```{r}
+sim_results_df = 
+  expand_grid(
+    sample_size = c(30, 60, 120, 240),
+    iter = 1:1000
+  ) %>% 
+  mutate(
+    estimate_df = map(sample_size, sim_mean_sd)
+  ) %>% 
+  unnest(estimate_df)
+
+sim_results_df
+```
+
+
+#### 2. plot the mu hat of samples of difference sample sizes
+
+##### `str_c("string:",content)` connects the string and the content
+##### `str_c` changes the original character string
+##### `fct_inorder(column)` factorize and reorder the factors
+##### x = factor , y = numeric, fill = factor
+```{r}
+sim_results_df %>% 
+  mutate(
+    sample_size = str_c("n = ", sample_size),
+    sample_size = fct_inorder(sample_size)) %>% 
+  ggplot(aes(x = sample_size, y = mu_hat, fill = sample_size)) + 
+  geom_violin()
+
+
+```
+
+These estimates are centered around the truth (2) for each sample size, and the width of the distribution shrinks as sample size grows.
+
+
+#### 3. usage of `str_c()`
+
+```{r}
+str_c("Letter: ", letters)
+
+str_c("Letter", letters, sep = ": ")
+
+str_c(letters, " is for", "...")
+
+str_c(letters[-26], " comes before ", letters[-1])
+
+str_c(letters, collapse = "")
+
+str_c(letters, collapse = ", ")
+
+# Missing inputs give missing outputs
+str_c(c("a", NA, "b"), "-d")
+
+# Use str_replace_NA to display literal NAs:
+str_c(str_replace_na(c("a", NA, "b")), "-d")
+
+````
+
+
+#### 4. empirical mean and variance of these estimates 
+
+##### mean and sd of sample means and sample variances
+
+```{r}
+sim_results_df %>% 
+  pivot_longer(
+    mu_hat:sigma_hat,
+    names_to = "parameter", 
+    values_to = "estimate") %>% 
+  group_by(parameter, sample_size) %>%  # group by 2 items
+  summarize(
+    emp_mean = mean(estimate),
+    emp_var = var(estimate)) %>% 
+  knitr::kable(digits = 3)
+
+```
+
+
+
+## Using rerun
+
+
+#### 1. `purrr::rerun(times,function())` to iterate the function for many times, without changing the arguments(inputs).
+
+```{r}
+sim_results_df =   
+  rerun(100, sim_mean_sd(30, 2, 3)) %>% 
+  bind_rows()
+
+sim_results_df
+```
+
+
+
+#### 2. FOR Loop + rerun()
+
+##### the argument changes in the function and we still want to iterate for many times
+##### create a list to contain the changed argument for the function
+##### create a empty output list to store the results
+
+```{r}
+n_list = 
+  list(
+    "n_30"  = 30,   # item name in a list is character with ""
+    "n_60"  = 60, 
+    "n_120" = 120, 
+    "n_240" = 240)
+
+output = vector("list", length = 4)
+
+for (i in 1:4) {
+  output[[i]] = rerun(100, sim_mean_sd(n_list[[i]])) %>% 
+    bind_rows
+}
+
+output
+
+
+```
+
+
+```{r}
+sim_results_df = 
+  tibble(sample_size = c(30, 60, 120, 240)) %>% 
+  mutate(
+    output_lists = map(.x = sample_size, ~rerun(1000, sim_mean_sd(n = .x))),
+    estimate_dfs = map(output_lists, bind_rows)) %>% 
+  select(-output_lists) %>% 
+  unnest(estimate_dfs)
+
+
+```
+
+
 
 
 
