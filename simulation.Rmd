@@ -13,3 +13,84 @@ set.seed(1)
 ```
 
 
+## Simulation: Mean and SD for one n
+
+#### 1. write a function for simulation and estimates
+
+##### summarize the simulated data
+```{r}
+sim_mean_sd = function(n, mu = 2, sigma = 3) {  # arguments with default
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = mu, sd = sigma),   # draw sample from normal distribution
+  )
+  
+  sim_data %>% 
+    summarize(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
+}
+
+```
+
+
+
+#### 2. sampling distribution of population mean estimate 
+
+##### because the `sim_mean_sd()` get data from normal distribution, we know mu hat follows normal distribution.
+$$
+\hat{\mu} \sim\left[\mu, \frac{\sigma}{\sqrt{n}}\right]
+$$
+
+
+#### 3. FOR loop to simulate 100 samples 
+
+##### use for loop to draw 100 samples
+##### `vector(mode="list")` create a list to store the output
+##### `list[[i]]` use double [] to call the index refered item
+##### `bind_rows(list)` combine the items by row
+```{r}
+output = vector("list", 100)     # vector(mode = "list") the output is a list
+
+for (i in 1:100) {
+  output[[i]] = sim_mean_sd(30)  # the items in the list are the results
+}
+
+sim_results = bind_rows(output)  # bind_rows(list) bind the list results by row
+
+```
+
+
+
+#### 4. `map()` to simulate 100 samples
+##### `expand_grid(x=,y=)` expand_grid creates a tibble
+```{r}
+sim_results_df = 
+  expand_grid(
+    sample_size = 30,
+    iter = 1:100
+  ) %>% 
+  mutate(
+    estimate_df = map(sample_size, sim_mean_sd)
+  ) %>% 
+  unnest(estimate_df)
+
+sim_results_df
+
+```
+
+#### 5. examples of `expand_grid()`
+##### can expand vector, df, matrix
+##### can be used to quickly set up a tibble 
+```{r}
+expand_grid(x = 1:3, y = 1:2)
+expand_grid(l1 = letters, l2 = LETTERS)  # letters and LETTERS are  character vector
+expand_grid(df = data.frame(x = 1:2, y = c(2, 1)), z = 1:3)
+expand_grid(x1 = matrix(1:4, nrow = 2), x2 = matrix(5:8, nrow = 2))
+```
+
+
+
+
+
